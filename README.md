@@ -1,14 +1,20 @@
 # SQL Learn Playground
 
+[![GitHub license](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
+[![GitHub Pages](https://github.com/justinjdaniel/sql-lear-playground/actions/workflows/static.yml/badge.svg)](https://justinjdaniel.github.io/sql-lear-playground/)
+
+
 sql-learn-playground is an interactive, browser-based SQL training app that lets you write, test, and explore SQL queries on a built-in dummy database. Featuring a beautiful UI and a fully client-side SQL engine, it’s perfect for learning and practicing SQL without any setup or backend required.
 
 ## Features
 
-*   **Interactive SQL Editor**: A powerful editor with syntax highlighting, powered by Monaco Editor.
+*   **Interactive SQL Editor**: A powerful editor with syntax highlighting and intelligent autocompletion for SQL keywords, table names, and column names, powered by Monaco Editor.
 *   **Client-Side SQL Engine**: Uses `sql.js` (SQLite compiled to WebAssembly) to run SQL queries directly in the browser. No server needed!
 *   **Dummy Data**: Comes pre-loaded with `customers` and `orders` tables to get you started right away.
 *   **Result Display**: View your query results in a clean, easy-to-read table.
-*   **Error Handling**: Get immediate feedback on any errors in your SQL queries.
+*   **Improved Error Handling**: Get immediate, user-friendly feedback on any errors in your SQL queries.
+*   **Practice Suggestions**: When your query has an error, the playground will suggest a relevant topic to practice.
+*   **Tips Section**: A handy section with tips for writing SQL queries.
 
 ## How to Use
 
@@ -28,11 +34,9 @@ Here are a few sample queries you can try:
 ## Technology Stack
 
 *   **HTML/CSS/JavaScript**: The core of the application.
-*   **Monaco Editor**: Provides the code editor with syntax highlighting.
+*   **Monaco Editor**: Provides the code editor with syntax highlighting and autocompletion.
 *   **sql.js**: A JavaScript library that provides a SQLite database in the browser.
 
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a pull request or open an issue.
-## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

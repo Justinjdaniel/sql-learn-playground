@@ -5,31 +5,129 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SQL Playground</title>
     <style>
-      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; margin: 2rem; }
-      #editor { height: 200px; border: 1px solid #ccc; border-radius: 4px; }
-      #run-button { margin-top: 10px; padding: 10px 15px; background-color: #007bff; color: white; border: none; cursor: pointer; border-radius: 4px; font-size: 16px; }
-      #run-button:hover { background-color: #0056b3; }
-      #results { margin-top: 20px; }
-      table { border-collapse: collapse; width: 100%; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
-      th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-      th { background-color: #f8f9fa; }
-      h1 { color: #333; }
+      :root {
+          --primary-color: #007bff;
+          --secondary-color: #6c757d;
+          --success-color: #28a745;
+          --danger-color: #dc3545;
+          --light-color: #f8f9fa;
+          --dark-color: #343a40;
+      }
+      body {
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+          margin: 0;
+          background-color: #f4f7f9;
+          color: var(--dark-color);
+      }
+      .container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 2rem;
+      }
+      #editor {
+          height: 250px;
+          border: 1px solid #ced4da;
+          border-radius: 0.25rem;
+          margin-bottom: 1rem;
+      }
+      #run-button {
+          padding: 0.75rem 1.5rem;
+          background-color: var(--primary-color);
+          color: white;
+          border: none;
+          cursor: pointer;
+          border-radius: 0.25rem;
+          font-size: 1rem;
+          transition: background-color 0.2s;
+      }
+      #run-button:hover {
+          background-color: #0056b3;
+      }
+      #results {
+          margin-top: 2rem;
+      }
+      table {
+          width: 100%;
+          border-collapse: collapse;
+          background-color: white;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      th, td {
+          padding: 1rem;
+          text-align: left;
+          border-bottom: 1px solid #dee2e6;
+      }
+      th {
+          background-color: var(--light-color);
+          font-weight: 600;
+      }
+      h1 {
+          color: var(--dark-color);
+          margin-bottom: 2rem;
+      }
+      #tips {
+          margin-top: 2rem;
+          background-color: white;
+          padding: 1.5rem;
+          border-radius: 0.25rem;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      #tips h2 {
+          margin-top: 0;
+          color: var(--primary-color);
+      }
+      #tips ul {
+          padding-left: 1.5rem;
+      }
+      #tips li {
+          margin-bottom: 0.5rem;
+      }
+      .error-message {
+          background-color: #f8d7da;
+          color: #721c24;
+          padding: 1rem;
+          border: 1px solid #f5c6cb;
+          border-radius: 0.25rem;
+          margin-bottom: 1rem;
+          display: none;
+      }
     </style>
   </head>
   <body>
-    <h1>SQL Playground 🚀</h1>
-    <div id="editor"></div>
-    <button id="run-button">Run Query</button>
-    <div id="results"></div>
+    <div class="container">
+      <h1>SQL Playground 🚀</h1>
+      <div id="editor"></div>
+      <button id="run-button">Run Query</button>
+      <div id="error" class="error-message"></div>
+      <div id="results"></div>
+      <div id="tips">
+        <h2>SQL Tips</h2>
+        <ul>
+          <li>Use `SELECT *` to see all columns in a table.</li>
+          <li>Use `WHERE` to filter your results.</li>
+          <li>Use `JOIN` to combine rows from two or more tables.</li>
+          <li>
+            Use `GROUP BY` to group rows that have the same values into summary
+            rows.
+          </li>
+          <li>
+            Use `ORDER BY` to sort the result set in ascending or descending
+            order.
+          </li>
+        </ul>
+      </div>
+    </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.27.0/min/vs/loader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/sql-wasm.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.js"></script>
     <script>
       let db;
+      let tableSchemas = {};
+
       async function initDb() {
         const SQL = await initSqlJs({
           locateFile: (file) =>
-            `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${file}`,
+            `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/${file}`,
         });
         db = new SQL.Database();
         // Create tables and insert some data
@@ -41,28 +139,106 @@
         db.run(
           "INSERT INTO orders VALUES (1, 1, 100.50), (2, 1, 25.00), (3, 2, 75.25), (4, 3, 50.00);"
         );
+
+        // Store table schemas
+        const tables = db.exec(
+          "SELECT name FROM sqlite_master WHERE type='table';"
+        );
+        tables[0].values.forEach((table) => {
+          const tableName = table[0];
+          const columns = db.exec(`PRAGMA table_info(${tableName});`);
+          tableSchemas[tableName] = columns[0].values.map((col) => col[1]);
+        });
       }
       initDb();
 
       let editor;
       require.config({
         paths: {
-          vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.27.0/min/vs",
+          vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs",
         },
       });
       require(["vs/editor/editor.main"], function () {
+        monaco.languages.registerCompletionItemProvider("sql", {
+          provideCompletionItems: function (model, position) {
+            const suggestions = [];
+            // Add SQL keywords
+            const keywords = [
+              "SELECT",
+              "FROM",
+              "WHERE",
+              "JOIN",
+              "ON",
+              "GROUP BY",
+              "ORDER BY",
+              "LIMIT",
+              "INSERT INTO",
+              "VALUES",
+              "UPDATE",
+              "SET",
+              "DELETE",
+            ];
+            keywords.forEach((keyword) => {
+              suggestions.push({
+                label: keyword,
+                kind: monaco.languages.CompletionItemKind.Keyword,
+                insertText: keyword,
+              });
+            });
+
+            // Add table names
+            Object.keys(tableSchemas).forEach((tableName) => {
+              suggestions.push({
+                label: tableName,
+                kind: monaco.languages.CompletionItemKind.Folder,
+                insertText: tableName,
+              });
+            });
+
+            // Add column names
+            Object.values(tableSchemas)
+              .flat()
+              .forEach((columnName) => {
+                suggestions.push({
+                  label: columnName,
+                  kind: monaco.languages.CompletionItemKind.Field,
+                  insertText: columnName,
+                });
+              });
+
+            return { suggestions: suggestions };
+          },
+        });
+
         editor = monaco.editor.create(document.getElementById("editor"), {
           value: "SELECT * FROM customers;",
           language: "sql",
+          theme: "vs-dark",
         });
       });
 
       const runButton = document.getElementById("run-button");
       const resultsDiv = document.getElementById("results");
+      const errorDiv = document.getElementById("error");
+
+      function getPracticeSuggestion(errorMessage) {
+        if (errorMessage.includes("no such table")) {
+          return "It seems like you are trying to query a table that does not exist. You can see the available tables in the autocomplete suggestions.";
+        }
+        if (errorMessage.includes("no such column")) {
+          return "It seems like you are trying to query a column that does not exist. You can see the available columns for each table in the autocomplete suggestions.";
+        }
+        if (errorMessage.includes("syntax error")) {
+          return 'It seems like there is a syntax error in your query. You can review the SQL syntax in the "Tips" section.';
+        }
+        return "";
+      }
 
       runButton.addEventListener("click", () => {
         const query = editor.getValue();
         resultsDiv.innerHTML = ""; // Clear previous results
+        errorDiv.style.display = "none"; // Clear previous errors
+
         try {
           const results = db.exec(query);
           if (results.length > 0) {
@@ -95,7 +271,9 @@
               "Query executed successfully, but no results were returned.";
           }
         } catch (e) {
-          resultsDiv.textContent = `Error: ${e.message}`;
+          const suggestion = getPracticeSuggestion(e.message);
+          errorDiv.innerHTML = `Oops! It looks like there's an error in your SQL query: ${e.message}<br>${suggestion}`;
+          errorDiv.style.display = "block";
         }
       });
     </script>
