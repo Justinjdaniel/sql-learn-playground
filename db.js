@@ -24,9 +24,11 @@ async function initDb() {
 function loadDummyData(dataset) {
   // Clear existing tables
   const tables = db.exec("SELECT name FROM sqlite_master WHERE type='table';");
-  tables[0].values.forEach((table) => {
-    db.run(`DROP TABLE ${table[0]};`);
-  });
+  if (tables && tables.length > 0 && tables[0].values) {
+    tables[0].values.forEach((table) => {
+      db.run(`DROP TABLE ${table[0]};`);
+    });
+  }
 
   if (dataset === "customers") {
     db.run("CREATE TABLE customers (id INT, name VARCHAR, email VARCHAR);");

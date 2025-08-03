@@ -1,67 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SQL Playground</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
     <div class="container">
-      <main>
-        <h1>SQL Playground 🚀</h1>
-        <div id="editor"></div>
-        <div class="button-container">
-          <button id="run-button" class="icon-button">
-            <i class="fas fa-play"></i> Run Query
-          </button>
-          <button id="theme-button" class="icon-button">
-            <i class="fas fa-palette"></i> Toggle Theme
-          </button>
-          <input
-            type="file"
-            id="file-input"
-            style="display: none;"
-            accept=".csv,.json"
-          />
-          <button id="upload-button" class="icon-button">
-            <i class="fas fa-upload"></i> Upload Data
-          </button>
-          <select id="dummy-data-select">
-            <option value="customers">Customers and Orders</option>
-            <option value="employees">Employees and Departments</option>
-          </select>
-        </div>
-        <div id="error" class="error-message"></div>
-        <div id="results"></div>
-      </main>
-      <aside>
-        <div id="schema-explorer">
-          <h2>Schema Explorer</h2>
-          <button id="refresh-schema-button">Refresh Schema</button>
-          <ul id="schema-list"></ul>
-        </div>
-        <div id="tips">
-          <h2>SQL Tips</h2>
-          <ul>
-            <li>Use `SELECT *` to see all columns in a table.</li>
-            <li>Use `WHERE` to filter your results.</li>
-            <li>Use `JOIN` to combine rows from two or more tables.</li>
-            <li>
-              Use `GROUP BY` to group rows that have the same values into
-              summary rows.
-            </li>
-            <li>
-              Use `ORDER BY` to sort the result set in ascending or descending
-              order.
-            </li>
-          </ul>
-        </div>
-      </aside>
+        <main>
+            <h1>SQL Playground 🚀</h1>
+            <div id="editor"></div>
+            <div class="button-container">
+                <button id="run-button" class="icon-button"><i class="fas fa-play"></i> Run Query</button>
+                <button id="theme-button" class="icon-button"><i class="fas fa-palette"></i> Toggle Theme</button>
+                <input type="file" id="file-input" style="display: none;" accept=".csv,.json">
+                <button id="upload-button" class="icon-button"><i class="fas fa-upload"></i> Upload Data</button>
+                <select id="dummy-data-select">
+                    <option value="customers">Customers and Orders</option>
+                    <option value="employees">Employees and Departments</option>
+                </select>
+            </div>
+            <div id="error" class="error-message"></div>
+            <div id="results"></div>
+        </main>
+        <aside>
+            <div id="schema-explorer">
+                <h2>Schema Explorer</h2>
+                <button id="refresh-schema-button">Refresh Schema</button>
+                <ul id="schema-list"></ul>
+            </div>
+            <div id="tips">
+                <h2>SQL Tips</h2>
+                <ul>
+                    <li>Use `SELECT *` to see all columns in a table.</li>
+                    <li>Use `WHERE` to filter your results.</li>
+                    <li>Use `JOIN` to combine rows from two or more tables.</li>
+                    <li>Use `GROUP BY` to group rows that have the same values into summary rows.</li>
+                    <li>Use `ORDER BY` to sort the result set in ascending or descending order.</li>
+                </ul>
+            </div>
+        </aside>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/sql-wasm.js"></script>
@@ -69,5 +49,5 @@
     <script src="db.js"></script>
     <script src="ui.js"></script>
     <script src="main.js"></script>
-  </body>
+</body>
 </html>
