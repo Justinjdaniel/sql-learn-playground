@@ -82,6 +82,29 @@
       #tips li {
           margin-bottom: 0.5rem;
       }
+      #schema-explorer {
+          margin-top: 2rem;
+          background-color: white;
+          padding: 1.5rem;
+          border-radius: 0.25rem;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      #schema-explorer h2 {
+          margin-top: 0;
+          color: var(--primary-color);
+      }
+      #schema-list {
+          padding-left: 0;
+          list-style: none;
+      }
+      #schema-list li {
+          margin-bottom: 0.5rem;
+          cursor: pointer;
+      }
+      #schema-list ul {
+          padding-left: 1.5rem;
+          list-style: square;
+      }
       .error-message {
           background-color: #f8d7da;
           color: #721c24;
@@ -98,8 +121,21 @@
       <h1>SQL Playground 🚀</h1>
       <div id="editor"></div>
       <button id="run-button">Run Query</button>
+      <button id="theme-button">Toggle Theme</button>
+      <input
+        type="file"
+        id="file-input"
+        style="display: none;"
+        accept=".csv,.json"
+      />
+      <button id="upload-button">Upload Data</button>
       <div id="error" class="error-message"></div>
       <div id="results"></div>
+      <div id="schema-explorer">
+        <h2>Schema Explorer</h2>
+        <button id="refresh-schema-button">Refresh Schema</button>
+        <ul id="schema-list"></ul>
+      </div>
       <div id="tips">
         <h2>SQL Tips</h2>
         <ul>
@@ -141,14 +177,8 @@
         );
 
         // Store table schemas
-        const tables = db.exec(
-          "SELECT name FROM sqlite_master WHERE type='table';"
-        );
-        tables[0].values.forEach((table) => {
-          const tableName = table[0];
-          const columns = db.exec(`PRAGMA table_info(${tableName});`);
-          tableSchemas[tableName] = columns[0].values.map((col) => col[1]);
-        });
+        // Store table schemas and render explorer
+        updateSchema();
       }
       initDb();
 
@@ -218,8 +248,109 @@
       });
 
       const runButton = document.getElementById("run-button");
+      const themeButton = document.getElementById("theme-button");
       const resultsDiv = document.getElementById("results");
       const errorDiv = document.getElementById("error");
+
+      let currentTheme = "vs-dark";
+      themeButton.addEventListener("click", () => {
+        currentTheme = currentTheme === "vs-dark" ? "vs-light" : "vs-dark";
+        monaco.editor.setTheme(currentTheme);
+      });
+
+      const fileInput = document.getElementById("file-input");
+      const uploadButton = document.getElementById("upload-button");
+      uploadButton.addEventListener("click", () => fileInput.click());
+
+      fileInput.addEventListener("change", (event) => {
+        const file = event.target.files[0];
+        if (!file) {
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const contents = e.target.result;
+          const tableName = file.name.split(".")[0];
+          if (file.name.endsWith(".csv")) {
+            const lines = contents.split("\n");
+            const headers = lines[0].split(",");
+            const createTableQuery = `CREATE TABLE ${tableName} (${headers
+              .map((h) => `${h.trim()} TEXT`)
+              .join(", ")});`;
+            db.run(createTableQuery);
+
+            for (let i = 1; i < lines.length; i++) {
+              const values = lines[i].split(",");
+              if (values.length === headers.length) {
+                const insertQuery = `INSERT INTO ${tableName} VALUES (${values
+                  .map((v) => `'${v.trim()}'`)
+                  .join(", ")});`;
+                db.run(insertQuery);
+              }
+            }
+          } else if (file.name.endsWith(".json")) {
+            const data = JSON.parse(contents);
+            const headers = Object.keys(data[0]);
+            const createTableQuery = `CREATE TABLE ${tableName} (${headers
+              .map((h) => `${h} TEXT`)
+              .join(", ")});`;
+            db.run(createTableQuery);
+
+            data.forEach((row) => {
+              const values = headers.map((h) => `'${row[h]}'`).join(", ");
+              const insertQuery = `INSERT INTO ${tableName} VALUES (${values});`;
+              db.run(insertQuery);
+            });
+          }
+          // Refresh schema for autocompletion and explorer
+          updateSchema();
+          alert(`Table '${tableName}' created successfully!`);
+        };
+        reader.readAsText(file);
+      });
+
+      const schemaList = document.getElementById("schema-list");
+      const refreshSchemaButton = document.getElementById(
+        "refresh-schema-button"
+      );
+
+      function renderSchema() {
+        schemaList.innerHTML = "";
+        Object.keys(tableSchemas).forEach((tableName) => {
+          const tableLi = document.createElement("li");
+          tableLi.textContent = tableName;
+          const columnsUl = document.createElement("ul");
+          columnsUl.style.display = "none";
+          tableSchemas[tableName].forEach((columnName) => {
+            const columnLi = document.createElement("li");
+            columnLi.textContent = columnName;
+            columnsUl.appendChild(columnLi);
+          });
+          tableLi.appendChild(columnsUl);
+          tableLi.addEventListener("click", (e) => {
+            e.stopPropagation();
+            columnsUl.style.display =
+              columnsUl.style.display === "none" ? "block" : "none";
+          });
+          schemaList.appendChild(tableLi);
+        });
+      }
+
+      async function updateSchema() {
+        const tables = db.exec(
+          "SELECT name FROM sqlite_master WHERE type='table';"
+        );
+        tableSchemas = {};
+        tables[0].values.forEach((table) => {
+          const tableName = table[0];
+          const columns = db.exec(`PRAGMA table_info(${tableName});`);
+          tableSchemas[tableName] = columns[0].values.map((col) => col[1]);
+        });
+        renderSchema();
+      }
+
+      refreshSchemaButton.addEventListener("click", updateSchema);
 
       function getPracticeSuggestion(errorMessage) {
         if (errorMessage.includes("no such table")) {
