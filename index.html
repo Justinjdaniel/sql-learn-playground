@@ -4,409 +4,70 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SQL Playground</title>
-    <style>
-      :root {
-          --primary-color: #007bff;
-          --secondary-color: #6c757d;
-          --success-color: #28a745;
-          --danger-color: #dc3545;
-          --light-color: #f8f9fa;
-          --dark-color: #343a40;
-      }
-      body {
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-          margin: 0;
-          background-color: #f4f7f9;
-          color: var(--dark-color);
-      }
-      .container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 2rem;
-      }
-      #editor {
-          height: 250px;
-          border: 1px solid #ced4da;
-          border-radius: 0.25rem;
-          margin-bottom: 1rem;
-      }
-      #run-button {
-          padding: 0.75rem 1.5rem;
-          background-color: var(--primary-color);
-          color: white;
-          border: none;
-          cursor: pointer;
-          border-radius: 0.25rem;
-          font-size: 1rem;
-          transition: background-color 0.2s;
-      }
-      #run-button:hover {
-          background-color: #0056b3;
-      }
-      #results {
-          margin-top: 2rem;
-      }
-      table {
-          width: 100%;
-          border-collapse: collapse;
-          background-color: white;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      }
-      th, td {
-          padding: 1rem;
-          text-align: left;
-          border-bottom: 1px solid #dee2e6;
-      }
-      th {
-          background-color: var(--light-color);
-          font-weight: 600;
-      }
-      h1 {
-          color: var(--dark-color);
-          margin-bottom: 2rem;
-      }
-      #tips {
-          margin-top: 2rem;
-          background-color: white;
-          padding: 1.5rem;
-          border-radius: 0.25rem;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      }
-      #tips h2 {
-          margin-top: 0;
-          color: var(--primary-color);
-      }
-      #tips ul {
-          padding-left: 1.5rem;
-      }
-      #tips li {
-          margin-bottom: 0.5rem;
-      }
-      #schema-explorer {
-          margin-top: 2rem;
-          background-color: white;
-          padding: 1.5rem;
-          border-radius: 0.25rem;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      }
-      #schema-explorer h2 {
-          margin-top: 0;
-          color: var(--primary-color);
-      }
-      #schema-list {
-          padding-left: 0;
-          list-style: none;
-      }
-      #schema-list li {
-          margin-bottom: 0.5rem;
-          cursor: pointer;
-      }
-      #schema-list ul {
-          padding-left: 1.5rem;
-          list-style: square;
-      }
-      .error-message {
-          background-color: #f8d7da;
-          color: #721c24;
-          padding: 1rem;
-          border: 1px solid #f5c6cb;
-          border-radius: 0.25rem;
-          margin-bottom: 1rem;
-          display: none;
-      }
-    </style>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="container">
-      <h1>SQL Playground 🚀</h1>
-      <div id="editor"></div>
-      <button id="run-button">Run Query</button>
-      <button id="theme-button">Toggle Theme</button>
-      <input
-        type="file"
-        id="file-input"
-        style="display: none;"
-        accept=".csv,.json"
-      />
-      <button id="upload-button">Upload Data</button>
-      <div id="error" class="error-message"></div>
-      <div id="results"></div>
-      <div id="schema-explorer">
-        <h2>Schema Explorer</h2>
-        <button id="refresh-schema-button">Refresh Schema</button>
-        <ul id="schema-list"></ul>
-      </div>
-      <div id="tips">
-        <h2>SQL Tips</h2>
-        <ul>
-          <li>Use `SELECT *` to see all columns in a table.</li>
-          <li>Use `WHERE` to filter your results.</li>
-          <li>Use `JOIN` to combine rows from two or more tables.</li>
-          <li>
-            Use `GROUP BY` to group rows that have the same values into summary
-            rows.
-          </li>
-          <li>
-            Use `ORDER BY` to sort the result set in ascending or descending
-            order.
-          </li>
-        </ul>
-      </div>
+      <main>
+        <h1>SQL Playground 🚀</h1>
+        <div id="editor"></div>
+        <div class="button-container">
+          <button id="run-button" class="icon-button">
+            <i class="fas fa-play"></i> Run Query
+          </button>
+          <button id="theme-button" class="icon-button">
+            <i class="fas fa-palette"></i> Toggle Theme
+          </button>
+          <input
+            type="file"
+            id="file-input"
+            style="display: none;"
+            accept=".csv,.json"
+          />
+          <button id="upload-button" class="icon-button">
+            <i class="fas fa-upload"></i> Upload Data
+          </button>
+          <select id="dummy-data-select">
+            <option value="customers">Customers and Orders</option>
+            <option value="employees">Employees and Departments</option>
+          </select>
+        </div>
+        <div id="error" class="error-message"></div>
+        <div id="results"></div>
+      </main>
+      <aside>
+        <div id="schema-explorer">
+          <h2>Schema Explorer</h2>
+          <button id="refresh-schema-button">Refresh Schema</button>
+          <ul id="schema-list"></ul>
+        </div>
+        <div id="tips">
+          <h2>SQL Tips</h2>
+          <ul>
+            <li>Use `SELECT *` to see all columns in a table.</li>
+            <li>Use `WHERE` to filter your results.</li>
+            <li>Use `JOIN` to combine rows from two or more tables.</li>
+            <li>
+              Use `GROUP BY` to group rows that have the same values into
+              summary rows.
+            </li>
+            <li>
+              Use `ORDER BY` to sort the result set in ascending or descending
+              order.
+            </li>
+          </ul>
+        </div>
+      </aside>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/sql-wasm.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.js"></script>
-    <script>
-      let db;
-      let tableSchemas = {};
-
-      async function initDb() {
-        const SQL = await initSqlJs({
-          locateFile: (file) =>
-            `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/${file}`,
-        });
-        db = new SQL.Database();
-        // Create tables and insert some data
-        db.run("CREATE TABLE customers (id INT, name VARCHAR, email VARCHAR);");
-        db.run(
-          "INSERT INTO customers VALUES (1, 'John Smith', 'john.smith@example.com'), (2, 'Jane Doe', 'jane.doe@example.com'), (3, 'Peter Jones', 'peter.jones@example.com');"
-        );
-        db.run("CREATE TABLE orders (id INT, customer_id INT, amount REAL);");
-        db.run(
-          "INSERT INTO orders VALUES (1, 1, 100.50), (2, 1, 25.00), (3, 2, 75.25), (4, 3, 50.00);"
-        );
-
-        // Store table schemas
-        // Store table schemas and render explorer
-        updateSchema();
-      }
-      initDb();
-
-      let editor;
-      require.config({
-        paths: {
-          vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs",
-        },
-      });
-      require(["vs/editor/editor.main"], function () {
-        monaco.languages.registerCompletionItemProvider("sql", {
-          provideCompletionItems: function (model, position) {
-            const suggestions = [];
-            // Add SQL keywords
-            const keywords = [
-              "SELECT",
-              "FROM",
-              "WHERE",
-              "JOIN",
-              "ON",
-              "GROUP BY",
-              "ORDER BY",
-              "LIMIT",
-              "INSERT INTO",
-              "VALUES",
-              "UPDATE",
-              "SET",
-              "DELETE",
-            ];
-            keywords.forEach((keyword) => {
-              suggestions.push({
-                label: keyword,
-                kind: monaco.languages.CompletionItemKind.Keyword,
-                insertText: keyword,
-              });
-            });
-
-            // Add table names
-            Object.keys(tableSchemas).forEach((tableName) => {
-              suggestions.push({
-                label: tableName,
-                kind: monaco.languages.CompletionItemKind.Folder,
-                insertText: tableName,
-              });
-            });
-
-            // Add column names
-            Object.values(tableSchemas)
-              .flat()
-              .forEach((columnName) => {
-                suggestions.push({
-                  label: columnName,
-                  kind: monaco.languages.CompletionItemKind.Field,
-                  insertText: columnName,
-                });
-              });
-
-            return { suggestions: suggestions };
-          },
-        });
-
-        editor = monaco.editor.create(document.getElementById("editor"), {
-          value: "SELECT * FROM customers;",
-          language: "sql",
-          theme: "vs-dark",
-        });
-      });
-
-      const runButton = document.getElementById("run-button");
-      const themeButton = document.getElementById("theme-button");
-      const resultsDiv = document.getElementById("results");
-      const errorDiv = document.getElementById("error");
-
-      let currentTheme = "vs-dark";
-      themeButton.addEventListener("click", () => {
-        currentTheme = currentTheme === "vs-dark" ? "vs-light" : "vs-dark";
-        monaco.editor.setTheme(currentTheme);
-      });
-
-      const fileInput = document.getElementById("file-input");
-      const uploadButton = document.getElementById("upload-button");
-      uploadButton.addEventListener("click", () => fileInput.click());
-
-      fileInput.addEventListener("change", (event) => {
-        const file = event.target.files[0];
-        if (!file) {
-          return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          const contents = e.target.result;
-          const tableName = file.name.split(".")[0];
-          if (file.name.endsWith(".csv")) {
-            const lines = contents.split("\n");
-            const headers = lines[0].split(",");
-            const createTableQuery = `CREATE TABLE ${tableName} (${headers
-              .map((h) => `${h.trim()} TEXT`)
-              .join(", ")});`;
-            db.run(createTableQuery);
-
-            for (let i = 1; i < lines.length; i++) {
-              const values = lines[i].split(",");
-              if (values.length === headers.length) {
-                const insertQuery = `INSERT INTO ${tableName} VALUES (${values
-                  .map((v) => `'${v.trim()}'`)
-                  .join(", ")});`;
-                db.run(insertQuery);
-              }
-            }
-          } else if (file.name.endsWith(".json")) {
-            const data = JSON.parse(contents);
-            const headers = Object.keys(data[0]);
-            const createTableQuery = `CREATE TABLE ${tableName} (${headers
-              .map((h) => `${h} TEXT`)
-              .join(", ")});`;
-            db.run(createTableQuery);
-
-            data.forEach((row) => {
-              const values = headers.map((h) => `'${row[h]}'`).join(", ");
-              const insertQuery = `INSERT INTO ${tableName} VALUES (${values});`;
-              db.run(insertQuery);
-            });
-          }
-          // Refresh schema for autocompletion and explorer
-          updateSchema();
-          alert(`Table '${tableName}' created successfully!`);
-        };
-        reader.readAsText(file);
-      });
-
-      const schemaList = document.getElementById("schema-list");
-      const refreshSchemaButton = document.getElementById(
-        "refresh-schema-button"
-      );
-
-      function renderSchema() {
-        schemaList.innerHTML = "";
-        Object.keys(tableSchemas).forEach((tableName) => {
-          const tableLi = document.createElement("li");
-          tableLi.textContent = tableName;
-          const columnsUl = document.createElement("ul");
-          columnsUl.style.display = "none";
-          tableSchemas[tableName].forEach((columnName) => {
-            const columnLi = document.createElement("li");
-            columnLi.textContent = columnName;
-            columnsUl.appendChild(columnLi);
-          });
-          tableLi.appendChild(columnsUl);
-          tableLi.addEventListener("click", (e) => {
-            e.stopPropagation();
-            columnsUl.style.display =
-              columnsUl.style.display === "none" ? "block" : "none";
-          });
-          schemaList.appendChild(tableLi);
-        });
-      }
-
-      async function updateSchema() {
-        const tables = db.exec(
-          "SELECT name FROM sqlite_master WHERE type='table';"
-        );
-        tableSchemas = {};
-        tables[0].values.forEach((table) => {
-          const tableName = table[0];
-          const columns = db.exec(`PRAGMA table_info(${tableName});`);
-          tableSchemas[tableName] = columns[0].values.map((col) => col[1]);
-        });
-        renderSchema();
-      }
-
-      refreshSchemaButton.addEventListener("click", updateSchema);
-
-      function getPracticeSuggestion(errorMessage) {
-        if (errorMessage.includes("no such table")) {
-          return "It seems like you are trying to query a table that does not exist. You can see the available tables in the autocomplete suggestions.";
-        }
-        if (errorMessage.includes("no such column")) {
-          return "It seems like you are trying to query a column that does not exist. You can see the available columns for each table in the autocomplete suggestions.";
-        }
-        if (errorMessage.includes("syntax error")) {
-          return 'It seems like there is a syntax error in your query. You can review the SQL syntax in the "Tips" section.';
-        }
-        return "";
-      }
-
-      runButton.addEventListener("click", () => {
-        const query = editor.getValue();
-        resultsDiv.innerHTML = ""; // Clear previous results
-        errorDiv.style.display = "none"; // Clear previous errors
-
-        try {
-          const results = db.exec(query);
-          if (results.length > 0) {
-            results.forEach((result) => {
-              const table = document.createElement("table");
-              const thead = document.createElement("thead");
-              const tbody = document.createElement("tbody");
-              const headerRow = document.createElement("tr");
-              result.columns.forEach((col) => {
-                const th = document.createElement("th");
-                th.textContent = col;
-                headerRow.appendChild(th);
-              });
-              thead.appendChild(headerRow);
-              result.values.forEach((row) => {
-                const tr = document.createElement("tr");
-                row.forEach((cell) => {
-                  const td = document.createElement("td");
-                  td.textContent = cell;
-                  tr.appendChild(td);
-                });
-                tbody.appendChild(tr);
-              });
-              table.appendChild(thead);
-              table.appendChild(tbody);
-              resultsDiv.appendChild(table);
-            });
-          } else {
-            resultsDiv.textContent =
-              "Query executed successfully, but no results were returned.";
-          }
-        } catch (e) {
-          const suggestion = getPracticeSuggestion(e.message);
-          errorDiv.innerHTML = `Oops! It looks like there's an error in your SQL query: ${e.message}<br>${suggestion}`;
-          errorDiv.style.display = "block";
-        }
-      });
-    </script>
+    <script src="db.js"></script>
+    <script src="ui.js"></script>
+    <script src="main.js"></script>
   </body>
 </html>
