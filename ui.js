@@ -32,7 +32,7 @@ function renderSchema() {
 /**
  * Initializes the UI components and event listeners.
  */
-function initializeUI(db) {
+function initializeUI(db, editor) {
   const runButton = document.getElementById("run-button");
   const themeButton = document.getElementById("theme-button");
   const resultsDiv = document.getElementById("results");
