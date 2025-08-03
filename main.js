@@ -66,6 +66,7 @@ require(["vs/editor/editor.main"], function () {
   });
 
   // Initialize the database and UI
-  initDb();
-  initializeUI();
+  initDb().then(() => {
+    initializeUI();
+  });
 });

@@ -14,6 +14,7 @@ async function initDb() {
   });
   db = new SQL.Database();
   loadDummyData("customers");
+  return db;
 }
 
 /**
